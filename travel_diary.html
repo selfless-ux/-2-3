@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Дневник путешествий</title>
+<style>
+
+body{
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #ffecd2, #fcb69f);
+margin:0;
+color:#333;
+}
+
+.container{
+max-width:1000px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+h1{
+text-align:center;
+color:#2c3e50;
+}
+
+h2{
+margin-top:30px;
+color:#34495e;
+}
+
+input, textarea{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 15px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#ff6f61;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#e85b50;
+}
+
+.card{
+background:white;
+border-radius:12px;
+padding:15px;
+margin:15px 0;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+img{
+max-width:100%;
+border-radius:10px;
+margin-top:10px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🌍 Дневник путешествий</h1>
+
+<h2>Добавить запись</h2>
+<input id="travelUser" placeholder="Ваше имя">
+<input id="travelLocation" placeholder="Местоположение">
+<input id="travelImage" placeholder="Ссылка на фото места">
+<input id="travelCost" placeholder="Стоимость путешествия">
+<input id="travelPlace" placeholder="Места для посещения">
+<input id="travelHeritage" placeholder="Места культурного наследия">
+<textarea id="travelNote" placeholder="Ваши заметки"></textarea>
+<button onclick="addTravel()">Добавить запись</button>
+
+<h2>Путешествия</h2>
+<div id="travels"></div>
+
+</div>
+
+<script>
+let travels = JSON.parse(localStorage.getItem("travels")) || []
+
+function saveData(){
+  localStorage.setItem("travels", JSON.stringify(travels))
+}
+
+function addTravel(){
+  let travel = {
+    id: Date.now(),
+    user: document.getElementById("travelUser").value,
+    location: document.getElementById("travelLocation").value,
+    image: document.getElementById("travelImage").value,
+    cost: document.getElementById("travelCost").value,
+    places: document.getElementById("travelPlace").value,
+    heritage: document.getElementById("travelHeritage").value,
+    note: document.getElementById("travelNote").value
+  }
+  travels.push(travel)
+  saveData()
+  renderTravels()
+}
+
+function renderTravels(){
+  let container = document.getElementById("travels")
+  container.innerHTML=""
+  travels.forEach(t=>{
+    let div = document.createElement("div")
+    div.className="card"
+    div.innerHTML = `
+      <b>${t.user}</b><br>
+      <b>Местоположение:</b> ${t.location}<br>
+      ${t.image ? `<img src="${t.image}">` : ""}
+      <b>Стоимость:</b> ${t.cost}<br>
+      <b>Места для посещения:</b> ${t.places}<br>
+      <b>Культурное наследие:</b> ${t.heritage}<br>
+      <b>Заметки:</b> ${t.note}<br><br>
+      <button onclick="editTravel(${t.id})">Редактировать</button>
+      <button onclick="deleteTravel(${t.id})">Удалить</button>
+    `
+    container.appendChild(div)
+  })
+}
+
+function editTravel(id){
+  let t = travels.find(tr=>tr.id===id)
+  t.user = prompt("Ваше имя:", t.user) || t.user
+  t.location = prompt("Местоположение:", t.location) || t.location
+  t.image = prompt("Ссылка на фото:", t.image) || t.image
+  t.cost = prompt("Стоимость:", t.cost) || t.cost
+  t.places = prompt("Места для посещения:", t.places) || t.places
+  t.heritage = prompt("Культурное наследие:", t.heritage) || t.heritage
+  t.note = prompt("Заметки:", t.note) || t.note
+  saveData()
+  renderTravels()
+}
+
+function deleteTravel(id){
+  travels = travels.filter(t=>t.id!==id)
+  saveData()
+  renderTravels()
+}
+
+renderTravels()
+</script>
+
+</body>
+</html>
